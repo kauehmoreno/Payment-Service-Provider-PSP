@@ -39,7 +39,7 @@ describe("storager test case",()=>{
                 done()
             })
         })
-        test("should not return error on callback when does not find a item, instead reply is null", done=>{
+        test("should not return error on callback when does not find an item, instead reply is null", done=>{
             storager.get<testDoc>("not-found", (err:Error|null, reply:any) => {
                 expect(err).toBeNull()
                 expect(reply).toBeNull()
