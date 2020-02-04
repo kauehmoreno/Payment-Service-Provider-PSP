@@ -6,7 +6,10 @@ describe("transaction test case",()=>{
         "Smartband XYZ 3.0", withCard(uuid()), 
         withValue(100.30),withMethod(paymentMethod.credit))
     test("should create transaction with current date",()=>{
-        expect(transaction.createdAt.getDate()).toBe(new Date().getDate())
+        const today = new Date()
+        expect(transaction.createdAt.getDate()).toBe(today.getDate())
+        expect(transaction.createdAt.getDay()).toBe(today.getDay())
+        expect(transaction.createdAt.getMonth()).toBe(today.getMonth())
     })
     test("should create transaction with value given",()=>{
         expect(transaction.value).toBe(100.30)
