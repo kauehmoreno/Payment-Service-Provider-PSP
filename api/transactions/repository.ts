@@ -39,7 +39,7 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
                 if(error){
                     reject(error)
                 }
-                resolve(JSON.parse(reply))
+                reply ? resolve(JSON.parse(reply)) : reject(new Error("not found"))
             })
         })
     }catch(err){
