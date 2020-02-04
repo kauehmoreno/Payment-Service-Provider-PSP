@@ -4,7 +4,7 @@
   "description": "payment service provider simulation",
   "main": "main.js",
   "scripts": {
-    "test": "npm test",
+    "test": "jest --watch ./dist/",
     "run-local": "node main.js",
     "watch": "docker-compose up",
     "start": "docker-compose up -d",
@@ -28,6 +28,7 @@
     "express": "^4.17.1",
     "helmet": "^3.21.2",
     "mongodb": "^3.5.2",
+    "mongodb-core": "^3.2.7",
     "redis": "^2.8.0",
     "uuid": "^3.4.0"
   },
@@ -37,12 +38,15 @@
     "@types/compression": "^1.0.1",
     "@types/express": "^4.17.2",
     "@types/helmet": "0.0.45",
+    "@types/jest": "^25.1.1",
+    "@types/mongodb": "^3.3.15",
     "@types/node": "^13.7.0",
     "@types/redis": "^2.8.14",
     "@types/redis-mock": "^0.17.0",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^3.4.7",
     "jest": "^25.1.0",
+    "redis-mock": "^0.48.0",
     "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"
   }
