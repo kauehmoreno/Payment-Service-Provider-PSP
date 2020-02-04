@@ -24,7 +24,7 @@ const databaseSettings = (): any => {
 const appSettings = (): any => {
     const env = process.env;
     return {
-        appName: env.APP_NAME??"jacortei",
+        appName: env.APP_NAME??"psp",
         port: env.APP_PORT??8080,
         host: env.APP_HOST,
         logLevel: env.LOG_LEVEL??"info"
