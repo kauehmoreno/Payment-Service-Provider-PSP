@@ -1,5 +1,4 @@
 import * as mockRedis from "redis-mock"
-import {v4 as uuid} from "uuid"
 import { newStorage } from "./cache"
 
 interface testDoc {

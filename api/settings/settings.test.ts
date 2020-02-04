@@ -1,5 +1,5 @@
-import { Settings } from './settings';
 import *as env from 'dotenv';
+import { Settings } from './settings';
 
 describe("database settings", ()=> {
     env.config()

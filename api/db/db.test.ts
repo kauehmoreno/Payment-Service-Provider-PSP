@@ -1,8 +1,6 @@
 import { MongoClient } from "mongodb";
 import *as env from 'dotenv';
 import { Database, connDB, withUrl, withConnectionOpts, withDatabase } from "./db";
-
-import { Settings } from "../../settings/settings";
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 jest.setTimeout(600000);
@@ -19,7 +17,6 @@ describe("test database module",()=>{
 
     beforeAll(async()=>{
         env.config()
-        const dbSettings = new Settings().database();
         mongoServer = new MongoMemoryServer();
         const mongoUri = await mongoServer.getConnectionString();
         const opts = {
