@@ -83,12 +83,16 @@ describe("transaction rules",()=>{
             })
         })
         describe("success case",()=>{
-            test("should return error when date is correctly",()=>{
+            test("should NOT return error when date is correctly",()=>{
                 const validate = dateValidator("2020-10-20")
                 expect(validate()).toBeNull()
             })
-            test("should return error when date is correctly and has time included",()=>{
+            test("should NOT return error when date is correctly and has time included",()=>{
                 const validate = dateValidator(new Date().toJSON())
+                expect(validate()).toBeNull()
+            })
+            test("expected layout conform ISO DD/MM/YYYY",()=>{
+                const validate = dateValidator("10/04/2020")
                 expect(validate()).toBeNull()
             })
         })
