@@ -44,6 +44,21 @@ export const cardIdValidator = (): Validators<Transaction> => {
     }
 }
 
+export const dateValidator = (date:string): Validators<void> => {
+    return function(): ValidateError | null {
+        const result = Date.parse(date)
+        if(!result) return validateCustomError(new Error(`invalid date: ${date}`))
+        return null
+    }
+}
+
+export const limitValidator = (limit:number): Validators<void> => {
+    return function(): ValidateError | null {
+        if(limit <= 0) return validateCustomError(new Error(`limit must be greater than zero`))
+        return null
+    }
+}
+
 type paymentType = (method: string) => boolean
 
 export const payment = (method:string, ...payments: paymentType[]): boolean => {
@@ -60,3 +75,5 @@ export const isCreditCard = (): paymentType => {
 export const isDebitCard = (): paymentType => {
     return (method: string) => method == paymentMethod.debit
 }
+
+
