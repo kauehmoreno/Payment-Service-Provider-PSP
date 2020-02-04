@@ -4,6 +4,7 @@ import { serverBuild } from './api/server/server';
 import { Settings } from './settings/settings';
 import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/db/db';
 import { routerBuilder } from './api/router/router';
+import { connectStorage, withHost, withPort, withKeepAlive, withConnTimeout, withPassword } from './api/cache/cache';
 
 
 const application = express()
@@ -26,6 +27,17 @@ application.listen(8000, function(){
     connDB(withUrl(dbSettings.url), withConnectionOpts(dbSettings.options), withDatabase(dbSettings.databae)).then(db =>{
         serverConf.database = db
     }).catch(err => {
-        serverConf.log.error(`fail to config db on app setup: ${err.message}`)
+        serverConf.log.error(`fail to config db on app setup: [${err.name}]:${err.message}`)
     })
+    const storagerSettings = serverConf.settings.cache()
+    
+    try{
+        const storage = connectStorage(
+            withHost(storagerSettings.host), withPort(storagerSettings.port),
+            withKeepAlive(storagerSettings.keepAlive),withConnTimeout(storagerSettings.timeout),
+            withPassword(storagerSettings.password))
+        serverConf.storage = storage
+    }catch(err){
+        serverConf.log.error(`fail to config cache on app setup: [${err.name}]:${err.message}`)
+    }
 })
