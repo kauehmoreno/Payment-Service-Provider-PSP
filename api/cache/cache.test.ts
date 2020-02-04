@@ -47,4 +47,17 @@ describe("storager test case",()=>{
             })
         })
     })
+    describe("delete case",()=>{
+        test("should not throw error deleting a non-existing key and return false",async()=>{
+            const ok = await storager.delete("non-existing-key")
+            expect(ok).toBeFalsy()
+        })
+        test("should return true when delete a existing one", async()=>{
+            const cacheKey = "existing-key"
+            const isInsert = await storager.set<string>(cacheKey,"hello item",JSON.stringify)
+            expect(isInsert).toBeTruthy()
+            const ok = await storager.delete(cacheKey)
+            expect(ok).toBeTruthy()
+        })
+    })
 })
