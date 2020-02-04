@@ -3,9 +3,9 @@ import { Transaction, paymentMethod } from "./transactions";
 
 
 
-export const validate = (s:Transaction, ...vs: Validators<Transaction>[]): ValidateError | null => {
+export const validate = (transaction:Transaction, ...vs: Validators<Transaction>[]): ValidateError | null => {
     for (const validator of vs) {
-        const err = validator(s)
+        const err = validator(transaction)
         if(err){
             return err
         }
