@@ -1,5 +1,8 @@
 import * as express from 'express';
 import *as env from 'dotenv';
+import { serverBuild } from './api/server/server';
+import { Settings } from './settings/settings';
+import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/db/db';
 
 
 const application = express()
@@ -13,4 +16,13 @@ const envSetup = () => {
 
 envSetup()
 
-application.listen(8000, ()=> console.log(`application running on port:8000`))
+const serverConf = serverBuild(application, new Settings())
+
+application.listen(8000, function(){
+    const dbSettings = serverConf.settings.database()
+    connDB(withUrl(dbSettings.url), withConnectionOpts(dbSettings.options), withDatabase(dbSettings.databae)).then(db =>{
+        serverConf.database = db
+    }).catch(err => {
+        serverConf.log.error(`fail to config db on app setup: ${err.message}`)
+    })
+})
