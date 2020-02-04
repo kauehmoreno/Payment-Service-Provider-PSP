@@ -46,6 +46,10 @@ export const cardIdValidator = (): Validators<Transaction> => {
 
 export const dateValidator = (date:string): Validators<void> => {
     return function(): ValidateError | null {
+        const layoutRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/
+        if(!layoutRegex.test(date)){
+            return validateCustomError(new Error(`invalid date layout: ${date}`))
+        }
         const result = Date.parse(date)
         if(!result) return validateCustomError(new Error(`invalid date: ${date}`))
         return null
