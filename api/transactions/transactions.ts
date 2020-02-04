@@ -42,7 +42,8 @@ export const createTransaction = (description: string, ...builders:transactionBu
     const tr = {
         id: uuid(),
         createdAt: new Date(),
-        cardId: ""
+        cardId: "",
+        description: description
     }
     builders.forEach(builders => builders(tr));
     return tr
