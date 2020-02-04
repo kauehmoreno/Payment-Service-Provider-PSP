@@ -83,6 +83,23 @@ describe("transaction repository",()=>{
                     expect(err.message).toBe("invalid date layout: 20-04-2020")
                 }
             })
+            test("should throw error when fails to retrieve transactions on db",async()=>{
+                mockDb.find.mockImplementation((table:string, query:Object)=>{
+                    expect(query)
+                    expect(query).toMatchObject({ createdAt: { "$gte": new Date("2020-01-20") } })
+                    throw new Error("mock internal db error")
+                })
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(new Error("error on cache"), null)
+                })
+                const date = "2020-01-20"
+                try{
+                    const result = await transactionsByDate(date,10,mockStorager, mockDb, dateValidator(date))
+                    expect(result).toBeUndefined()
+                }catch(err){
+                    expect(err.message).toBe("could not find transactions byDate:2020-01-20 [Error]:mock internal db error")
+                }
+            })
         })
     })
 })
