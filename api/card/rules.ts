@@ -3,6 +3,16 @@ import { Card } from "./card";
 import * as cardValidator from "card-validator"
 
 
+export const cardValidation = (card:Card, ...validators:Validators<Card>[]): ValidateError | null => {
+    validators.forEach(validate => {
+        const error = validate(card)
+        if(error){
+            return error
+        }
+    });
+    return null
+}
+
 export const cardNumberValidator = (): Validators<Card> => {
     return function(card: Card): ValidateError|null {
         const validator = cardValidator.number(card.num)
@@ -38,5 +48,22 @@ export const cardCvvValidator = (): Validators<Card> => {
             return null
         }
         return validateCustomError(new Error(`invalid cvv: ${card.cvv}`))
+    }
+}
+
+
+type CardModifier = (card:Card) => void
+
+
+export const cardModifier = (card:Card, ...modifiers:CardModifier[]): void => {
+    modifiers.forEach(modify => {
+        modify(card)
+    });
+}
+
+export const modifyCardNumber = (): CardModifier => {
+    return (card:Card):void =>  {
+        const lastIndex = card.num.length
+        card.num = card.num.slice(lastIndex-4 > 0? lastIndex-4: 0, lastIndex)
     }
 }
