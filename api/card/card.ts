@@ -1,4 +1,7 @@
+
+export const cardCacheKey = "card:"
 export interface Card{
+    id:string
     num: string
     name:string
     expireAt: string
