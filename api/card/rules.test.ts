@@ -1,4 +1,4 @@
-import { cardNumberValidator, cardNameValidator, cardExpirationValidator, cardCvvValidator } from "./rules"
+import { cardNumberValidator, cardNameValidator, cardExpirationValidator, cardCvvValidator, cardModifier, modifyCardNumber } from "./rules"
 import { newCard, withCardNumber, withCardName, withExpireAt, withCardCvv } from "./card"
 
 describe("card rules",()=> {
@@ -112,6 +112,18 @@ describe("card rules",()=> {
                 const error = validate(newCard(withCardCvv(123)))
                 expect(error).toBeNull()
             })
+        })
+    })
+})
+
+describe("card modifiers",()=>{
+    describe("card number modifier",()=>{
+        test("should return last four digits of card number",()=>{
+            const number = "4539254752627906"
+            const card = newCard(withCardNumber(number))
+            cardModifier(card, modifyCardNumber())
+            expect(card.num).toHaveLength(4)
+            expect(card.num).toBe("7906")
         })
     })
 })
