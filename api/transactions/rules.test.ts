@@ -74,12 +74,17 @@ describe("transaction rules",()=>{
             test("invalid string",()=>{
                 const validate = dateValidator("invalid-date")
                 expect(validate()?.code).toBe(400)
-                expect(validate()?.message).toBe(`invalid date: invalid-date`)
+                expect(validate()?.message).toBe(`invalid date layout: invalid-date`)
             })
             test("not expected layout conform ISO",()=>{
                 const validate = dateValidator("20-10-2020")
                 expect(validate()?.code).toBe(400)
-                expect(validate()?.message).toBe(`invalid date: 20-10-2020`)
+                expect(validate()?.message).toBe(`invalid date layout: 20-10-2020`)
+            })
+            test("should return error due to invalid layout format",()=>{
+                const validate = dateValidator("10/04/2020")
+                expect(validate()?.code).toBe(400)
+                expect(validate()?.message).toBe("invalid date layout: 10/04/2020")
             })
         })
         describe("success case",()=>{
@@ -89,10 +94,6 @@ describe("transaction rules",()=>{
             })
             test("should NOT return error when date is correctly and has time included",()=>{
                 const validate = dateValidator(new Date().toJSON())
-                expect(validate()).toBeNull()
-            })
-            test("expected layout conform ISO DD/MM/YYYY",()=>{
-                const validate = dateValidator("10/04/2020")
                 expect(validate()).toBeNull()
             })
         })

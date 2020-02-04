@@ -80,7 +80,7 @@ describe("transaction repository",()=>{
                     expect(result).toBeUndefined()
                 }catch(err){
                     expect(err.code).toBe(400)
-                    expect(err.message).toBe("invalid date: 20-04-2020")
+                    expect(err.message).toBe("invalid date layout: 20-04-2020")
                 }
             })
         })
