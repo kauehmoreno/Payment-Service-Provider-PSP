@@ -37,6 +37,13 @@ export const paymentMethodValidator = (): Validators<Transaction> => {
     }
 }
 
+export const cardIdValidator = (): Validators<Transaction> => {
+    return function(t: Transaction): ValidateError | null {
+        if(!t.cardId) return validateCustomError(new Error(`invalid id reference: ${t.cardId}`))
+        return null
+    }
+}
+
 type paymentType = (method: string) => boolean
 
 export const payment = (method:string, ...payments: paymentType[]): boolean => {

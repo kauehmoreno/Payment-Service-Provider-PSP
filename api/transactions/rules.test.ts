@@ -1,4 +1,4 @@
-import { validate, valueValidator, paymentMethodValidator, payment, isCreditCard, isDebitCard } from "./rules"
+import { validate, valueValidator, paymentMethodValidator, payment, isCreditCard, isDebitCard, cardIdValidator } from "./rules"
 import { withValue, createTransaction, withMethod, paymentMethod } from "./transactions"
 
 describe("transaction rules",()=>{
@@ -57,6 +57,15 @@ describe("transaction rules",()=>{
             test("payment isDebit should return true when matchs value",()=>{
                 const ok = payment(paymentMethod.debit, isDebitCard())
                 expect(ok).toBeTruthy()
+            })
+        })
+    })
+    describe("transaction card id",()=>{
+        describe("error cases",()=> {
+            test("should return error if card is undefined or null",()=>{
+                const error = validate(createTransaction("fake one", withValue(10)), cardIdValidator())
+                expect(error?.code).toBe(400)
+                expect(error?.message).toBe("invalid id reference: ")
             })
         })
     })
