@@ -38,6 +38,7 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
             cache.get<Transaction>(`${transactionCacheKey}${date}`, (error:Error|null, reply:any)=>{
                 if(error){
                     reject(error)
+                    return
                 }
                 reply ? resolve(JSON.parse(reply)) : reject(new Error("not found"))
             })
@@ -45,10 +46,12 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
     }catch(err){
         try{
             const transactions = await db.find<Transaction>(tableName.name, {createdAt:{$gte: new Date(Date.parse(date))}})
-            cache.set<Transaction[]>(`${transactionCacheKey}${date}`, transactions, JSON.stringify).catch(err=>{
+            try{
+                cache.set<Transaction[]>(`${transactionCacheKey}${date}`, transactions, JSON.stringify)    
                 return transactions
-            })
-            return transactions
+            }catch(err){
+                return transactions
+            }
         }catch(err){
             throw new Error(`could not find transactions byDate:${date} [${err.name}]:${err.message}`)
         }
