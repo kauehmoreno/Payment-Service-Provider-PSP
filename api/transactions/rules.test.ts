@@ -1,4 +1,4 @@
-import { validate, valueValidator, paymentMethodValidator, payment, isCreditCard, isDebitCard, cardIdValidator } from "./rules"
+import { validate, valueValidator, paymentMethodValidator, payment, isCreditCard, isDebitCard, cardIdValidator, dateValidator, limitValidator } from "./rules"
 import { withValue, createTransaction, withMethod, paymentMethod } from "./transactions"
 
 describe("transaction rules",()=>{
@@ -66,6 +66,54 @@ describe("transaction rules",()=>{
                 const error = validate(createTransaction("fake one", withValue(10)), cardIdValidator())
                 expect(error?.code).toBe(400)
                 expect(error?.message).toBe("invalid id reference: ")
+            })
+        })
+    })
+    describe("filter date ",()=>{
+        describe("erro cases",()=>{
+            test("invalid string",()=>{
+                const validate = dateValidator("invalid-date")
+                expect(validate()?.code).toBe(400)
+                expect(validate()?.message).toBe(`invalid date: invalid-date`)
+            })
+            test("not expected layout conform ISO",()=>{
+                const validate = dateValidator("20-10-2020")
+                expect(validate()?.code).toBe(400)
+                expect(validate()?.message).toBe(`invalid date: 20-10-2020`)
+            })
+        })
+        describe("success case",()=>{
+            test("should return error when date is correctly",()=>{
+                const validate = dateValidator("2020-10-20")
+                expect(validate()).toBeNull()
+            })
+            test("should return error when date is correctly and has time included",()=>{
+                const validate = dateValidator(new Date().toJSON())
+                expect(validate()).toBeNull()
+            })
+        })
+    })
+    describe("limit validator",()=>{
+        describe("error cases",()=>{
+            test("should return error for zero limit",()=>{
+                const validate = limitValidator(0)
+                expect(validate()?.code).toBe(400)
+                expect(validate()?.message).toBe(`limit must be greater than zero`)
+            })
+            test("should return error for negative limit",()=>{
+                const validate = limitValidator(-10)
+                expect(validate()?.code).toBe(400)
+                expect(validate()?.message).toBe(`limit must be greater than zero`)
+            })
+        })
+        describe("success cases",()=>{
+            test("should not return error to limit greater than one",()=>{
+                const validate = limitValidator(10)
+                expect(validate()).toBeNull()
+            })
+            test("should not return error to limit one",()=>{
+                const validate = limitValidator(1)
+                expect(validate()).toBeNull()
             })
         })
     })
