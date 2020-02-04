@@ -6,7 +6,7 @@ export enum paymentMethod{
     credit = "credit_card"
 }
 
-const cacheKey = "transaction:"
+export const transactionCacheKey = "transaction:"
 
 export interface Transaction{
     id: string
