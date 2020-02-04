@@ -3,6 +3,7 @@ import *as env from 'dotenv';
 import { serverBuild } from './api/server/server';
 import { Settings } from './settings/settings';
 import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/db/db';
+import { routerBuilder } from './api/router/router';
 
 
 const application = express()
@@ -17,6 +18,8 @@ const envSetup = () => {
 envSetup()
 
 const serverConf = serverBuild(application, new Settings())
+// routers setup
+routerBuilder(serverConf)
 
 application.listen(8000, function(){
     const dbSettings = serverConf.settings.database()
