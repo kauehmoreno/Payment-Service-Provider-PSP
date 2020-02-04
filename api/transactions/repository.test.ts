@@ -3,7 +3,7 @@ import { createTransaction, withValue, withMethod, paymentMethod, withCard, Tran
 import { v4 as uuid } from "uuid"
 import { EventEmitter } from "events"
 import { transactionEvent } from "./events"
-import { dateValidator } from "./rules"
+import { dateValidator, limitValidator } from "./rules"
 
 const mockDb = {
     insert:jest.fn().mockReturnThis(),
@@ -21,7 +21,9 @@ const mockStorager = {
 
 afterEach(()=>{
     mockDb.insert.mockReset()
+    mockDb.find.mockReset()
     mockStorager.set.mockReset()
+    mockStorager.get.mockReset()
 })
 
 describe("transaction repository",()=>{
@@ -84,12 +86,12 @@ describe("transaction repository",()=>{
                 }
             })
             test("should throw error when fails to retrieve transactions on db",async()=>{
-                mockDb.find.mockImplementation((table:string, query:Object)=>{
+                mockDb.find.mockImplementationOnce((table:string, query:Object)=>{
                     expect(query)
                     expect(query).toMatchObject({ createdAt: { "$gte": new Date("2020-01-20") } })
                     throw new Error("mock internal db error")
                 })
-                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                mockStorager.get.mockImplementationOnce((key:string, cb:(error:Error|null, reply:any)=>void)=>{
                     cb(new Error("error on cache"), null)
                 })
                 const date = "2020-01-20"
@@ -99,6 +101,39 @@ describe("transaction repository",()=>{
                 }catch(err){
                     expect(err.message).toBe("could not find transactions byDate:2020-01-20 [Error]:mock internal db error")
                 }
+            })
+        })
+        describe("success cases",()=>{
+            const date = "2020-01-20"
+            test("should retrieve data from cache when finds",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    const data = [createTransaction("my fake one",withValue(99.9),withMethod(paymentMethod.debit), withCard("fake-card-id"))]
+                    cb(null, JSON.stringify(data))
+                })
+                const result = await transactionsByDate(date, 10, mockStorager,mockDb, dateValidator(date),limitValidator(10))
+                expect(result).toHaveLength(1)
+                expect(result[0].cardId).toBe("fake-card-id")
+                expect(result[0].value).toBe(99.9)
+                expect(result[0].method).toBe("debit_card")
+                expect(result[0].description).toBe("my fake one")
+            })
+
+            test("should return value from db when does not find on cache and set on cache right after",async ()=>{
+                const data = [createTransaction("my fake one",withValue(99.9),withMethod(paymentMethod.debit), withCard("fake-card-id"))]
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+                mockDb.find.mockResolvedValue(data)
+                mockStorager.set.mockImplementation((key:string, v: any, marshaller: any)=> {
+                    expect(key).toBe("transaction:2020-01-20")
+                })
+                const result = await transactionsByDate(date, 10, mockStorager,mockDb, dateValidator(date),limitValidator(10))
+                expect(mockStorager.set.call.length).toBe(1)
+                expect(result).toHaveLength(1)
+                expect(result[0].cardId).toBe("fake-card-id")
+                expect(result[0].value).toBe(99.9)
+                expect(result[0].method).toBe("debit_card")
+                expect(result[0].description).toBe("my fake one")
             })
         })
     })
