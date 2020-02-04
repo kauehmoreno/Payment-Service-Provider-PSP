@@ -1,9 +1,9 @@
 import { Settings } from "../../settings/settings";
 import {Express } from 'express';
+import { Database } from "../db/db";
 import { EventEmitter } from "events";
 import * as logger from 'bunyan';
-import { Database } from "../pkg/db/db";
-import { Storager } from "../pkg/cache/cache";
+import { Storager } from "../cache/cache";
 
 export interface ServerConf {
     app:Express 

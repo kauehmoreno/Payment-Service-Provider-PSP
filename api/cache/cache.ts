@@ -1,4 +1,7 @@
+import { ServerConf } from "../server/server"
 import * as provider from 'redis';
+import { resolve } from "dns";
+
 
 type Marshaller = (value: any, replacer?: ((this: any, key: string, value: any) => any) | undefined, space?: string | number | undefined) => string
 type CallbackResponser<T> = (err:Error|null, reply:any) => any
