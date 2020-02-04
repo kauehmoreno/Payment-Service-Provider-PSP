@@ -6,20 +6,23 @@ export enum paymentMethod{
     credit = "credit_card"
 }
 
+const cacheKey = "transaction:"
+
 export interface Transaction{
     id: string
     value?: number
     description?:string
+    createdAt: Date
     method?:paymentMethod
-    cardToken: string
+    cardId: string
 }
 
 
 type transactionBuilder = (transaction: Transaction) => void
 
-export const withCard = (token: string): transactionBuilder => {
+export const withCard = (cardId: string): transactionBuilder => {
     return function(transaction: Transaction){
-        transaction.cardToken = token
+        transaction.cardId = cardId
     }
 }
 
@@ -38,7 +41,8 @@ export const withMethod = (paymentMethod: paymentMethod): transactionBuilder => 
 export const createTransaction = (description: string, ...builders:transactionBuilder[]): Transaction => {
     const tr = {
         id: uuid(),
-        cardToken: ""
+        createdAt: new Date(),
+        cardId: ""
     }
     builders.forEach(builders => builders(tr));
     return tr
