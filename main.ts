@@ -2,10 +2,9 @@ import * as express from 'express';
 import *as env from 'dotenv';
 import { serverBuild } from './api/server/server';
 import { Settings } from './settings/settings';
-import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/db/db';
 import { routerBuilder } from './api/router/router';
-import { connectStorage, withHost, withPort, withKeepAlive, withConnTimeout, withPassword } from './api/cache/cache';
-
+import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/pkg/db/db';
+import { connectStorage, withHost, withPort, withKeepAlive, withConnTimeout, withPassword } from './api/pkg/cache/cache';
 
 const application = express()
 

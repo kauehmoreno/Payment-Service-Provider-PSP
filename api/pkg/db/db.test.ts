@@ -2,8 +2,8 @@ import { MongoClient } from "mongodb";
 import *as env from 'dotenv';
 import { Database, connDB, withUrl, withConnectionOpts, withDatabase } from "./db";
 
-import { Settings } from "../../settings/settings";
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Settings } from "../../../settings/settings";
 
 jest.setTimeout(600000);
 
