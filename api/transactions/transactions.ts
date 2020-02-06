@@ -14,6 +14,7 @@ export interface Transaction{
     value?: number
     description?:string
     createdAt: Date
+    clientId: string
     method?:paymentMethod
     cardId: string
 }
@@ -24,6 +25,12 @@ type transactionBuilder = (transaction: Transaction) => void
 export const withCard = (cardId: string): transactionBuilder => {
     return function(transaction: Transaction){
         transaction.cardId = cardId
+    }
+}
+
+export const withClientId = (cli: string): transactionBuilder => {
+    return function(transaction: Transaction){
+        transaction.clientId = cli
     }
 }
 
@@ -44,6 +51,7 @@ export const createTransaction = (description: string, ...builders:transactionBu
         _id: new ObjectId(),
         createdAt: new Date(),
         cardId: "",
+        clientId: "",
         description: description
     }
     builders.forEach(builders => builders(tr));
