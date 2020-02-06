@@ -7,6 +7,8 @@ export enum Status{
     waiting = "waiting_funds"
 }
 
+export const payableCacheKey = "payable:"
+
 export interface Payable{
     _id: ObjectId
     transactionId: string
