@@ -47,13 +47,13 @@ export const connDB = async (...confs: config[]): Promise<Database> => {
         conf(db)
     });
 
-    return new Promise((resolver, reject) => {
+    return new Promise((resolve, reject) => {
         MongoClient.connect(db.url, db.connOpts, function(error:Error, cli:MongoClient){
             if(error){
                 reject(error)
                 return
             }
-            resolver(newDB(cli.db(db.database)))
+            resolve(newDB(cli.db(db.database)))
         })
     })
 }
