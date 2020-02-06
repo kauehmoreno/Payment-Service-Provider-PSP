@@ -51,6 +51,9 @@ services:
       - DB_LOGIN=psp-login
       - DB_PASSWORD=psp-password
       - DB_DATABASE=psp
+      - NATS_USER=psp-nats-user
+      - NATS_PASS=I7%RHG!hbx$t4@obk8
+      - NATS_URL=nats://broker:4222
     labels: 
       - traefik.enable=true
       - "traefik.http.routers.backendrouter.entrypoints=web"
@@ -84,5 +87,9 @@ services:
       environment: 
         MONGO_INITDB_ROOT_USERNAME: psp-user
         MONGO_INITDB_ROOT_PASSWORD: psp-password
-
-    
+  broker:
+    image: nats:2.0.0-linux
+    expose: 
+      - "4222"
+    ports:
+      - "8222:8222"
