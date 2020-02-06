@@ -25,8 +25,7 @@ describe("payable repository",()=>{
         createTransaction("FAKE TRANSACTION", withValue(120.20),
         withCard(new ObjectId().toHexString()),withMethod(paymentMethod.credit),
         withClientId(new ObjectId().toHexString())
-    )
-    )
+    ))
     describe("savePayable",()=>{
         describe("error cases",()=>{
             test("should return error when fails to insert",()=>{

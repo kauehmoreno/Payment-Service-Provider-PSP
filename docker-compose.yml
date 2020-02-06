@@ -93,3 +93,16 @@ services:
       - "4222"
     ports:
       - "8222:8222"
+  worker-payable:
+    build: 
+      context: .
+      dockerfile: api/worker/Dockerfile
+    restart: always
+    environment:
+      - NATS_USER=psp-nats-user
+      - NATS_PASS=I7%RHG!hbx$t4@obk8
+      - NATS_URL=nats://broker:4222
+    depends_on: 
+      - cache
+      - broker
+      - database
