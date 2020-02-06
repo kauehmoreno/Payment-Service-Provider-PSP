@@ -1,7 +1,8 @@
+import { ObjectID } from "mongodb"
 
 export const cardCacheKey = "card:"
 export interface Card{
-    id:string
+    _id: ObjectID
     num: string
     name:string
     expireAt: string

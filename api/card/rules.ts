@@ -4,12 +4,12 @@ import * as cardValidator from "card-validator"
 
 
 export const cardValidation = (card:Card, ...validators:Validators<Card>[]): ValidateError | null => {
-    validators.forEach(validate => {
-        const error = validate(card)
-        if(error){
-            return error
+    for (const validator of validators) {
+        const err = validator(card)
+        if(err){
+            return err
         }
-    });
+    }
     return null
 }
 
@@ -19,7 +19,7 @@ export const cardNumberValidator = (): Validators<Card> => {
         if (validator.isPotentiallyValid || validator.isValid){
             return null
         }
-        return validateCustomError(new Error(`invalid card number`))
+        return validateCustomError(new Error(`invalid card number:${card.num}`))
     }
 }
  
@@ -43,6 +43,9 @@ export const cardExpirationValidator = (): Validators<Card> => {
 
 export const cardCvvValidator = (): Validators<Card> => {
     return(card:Card):ValidateError | null => {
+        if(!card.cvv){
+            return validateCustomError(new Error(`invalid cvv`))    
+        }
         const validator = cardValidator.cvv(card.cvv.toString())
         if(validator.isValid || validator.isPotentiallyValid){
             return null

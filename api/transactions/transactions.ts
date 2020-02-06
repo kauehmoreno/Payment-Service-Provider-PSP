@@ -1,5 +1,6 @@
 import { Card } from "../card/card"
 import { v4 as uuid} from "uuid"
+import { ObjectId } from "mongodb"
 
 export enum paymentMethod{
     debit = "debit_card",
@@ -9,7 +10,7 @@ export enum paymentMethod{
 export const transactionCacheKey = "transaction:"
 
 export interface Transaction{
-    id: string
+    _id: ObjectId
     value?: number
     description?:string
     createdAt: Date
@@ -40,7 +41,7 @@ export const withMethod = (paymentMethod: paymentMethod): transactionBuilder => 
 
 export const createTransaction = (description: string, ...builders:transactionBuilder[]): Transaction => {
     const tr = {
-        id: uuid(),
+        _id: new ObjectId(),
         createdAt: new Date(),
         cardId: "",
         description: description

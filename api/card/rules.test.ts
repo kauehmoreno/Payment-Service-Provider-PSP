@@ -10,7 +10,7 @@ describe("card rules",()=> {
                     withExpireAt("2017/09"),withCardCvv(233))
                 const error = validate(card)
                 expect(error?.code).toBe(400)
-                expect(error?.message).toBe("invalid card number")
+                expect(error?.message).toBe("invalid card number:32193093031231")
             })
         })
         describe("success cases",()=>{

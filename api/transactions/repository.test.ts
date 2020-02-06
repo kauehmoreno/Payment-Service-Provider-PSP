@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid"
 import { EventEmitter } from "events"
 import { transactionEvent } from "./events"
 import { dateValidator, limitValidator } from "./rules"
+import { ObjectId } from "mongodb"
 
 const mockDb = {
     insert:jest.fn().mockReturnThis(),
@@ -51,26 +52,26 @@ describe("transaction repository",()=>{
         describe("success case",()=>{
             const tr = createTransaction("my mock transaction", withValue(10), withMethod(paymentMethod.debit), withCard(uuid()))
             test("should emit whenever client defines a notifier after a success operation",async()=>{
-                const resolveId = uuid()
+                const resolveId = new ObjectId()
                 mockDb.insert.mockResolvedValueOnce([resolveId])
                 const notifier = new EventEmitter()
 
                 notifier.on(transactionEvent.onCreate(), (tr: Transaction)=>{
-                    expect(tr.id).toBe(resolveId)
+                    expect(tr._id).toBe(resolveId)
                     expect(tr.method).toBe(paymentMethod.debit)
                     expect(tr.description).toBe("my mock transaction")
                     expect(tr.value).toBe(10)
                 })
                 const result = await saveTransaction(tr, mockDb, notifier)
-                expect(result.length).toBe(36)
-                expect(result).toBe(resolveId)
+                expect(result.length).toBe(24)
+                expect(result).toBe(resolveId.toHexString())
             })
             test("should not emit event if client does not specify an event and does not cause error",async ()=>{
-                const resolveId = uuid()
+                const resolveId = new ObjectId()
                 mockDb.insert.mockResolvedValueOnce([resolveId])
                 const result = await saveTransaction(tr, mockDb)
-                expect(result.length).toBe(36)
-                expect(result).toBe(resolveId)
+                expect(result.length).toBe(24)
+                expect(result).toBe(resolveId.toHexString())
             })
         })
     })

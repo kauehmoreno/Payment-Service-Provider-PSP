@@ -3,7 +3,6 @@ import { Card, cardCacheKey } from "./card";
 import { Writer, Reader } from "../db/db";
 import { cardValidation, cardNumberValidator, cardNameValidator, cardExpirationValidator, cardCvvValidator, cardModifier, modifyCardNumber } from "./rules";
 import { Storager } from "../cache/cache";
-import { Resolver } from "dns";
 import { ObjectId } from "mongodb";
 
 
@@ -17,12 +16,12 @@ export const saveCard = async(card: Card, db:Writer, notifier?:EventEmitter): Pr
         cardCvvValidator())
     if (error){
         throw error
-    }
+    }   
     try{
         cardModifier(card,modifyCardNumber())
         const result = await db.insert(tableName.name,[card])
-        card.id = result[0]
-        return card.id
+        card._id = new ObjectId(result[0])
+        return card._id.toHexString()
     }catch(err){
         throw new Error(`could not save card ${card.num} [${err.name}]: ${err.message}`)
     }
