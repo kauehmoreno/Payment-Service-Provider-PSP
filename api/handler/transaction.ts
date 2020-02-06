@@ -7,6 +7,7 @@ import { newCard, withCardNumber, withCardName, withExpireAt, withCardCvv } from
 import { writeResponse, withError, withStatusCode, withData } from "../core/response";
 import { saveCard } from "../card/repository";
 import { validatorErrCode } from "../validator/validator";
+import { ObjectId } from "mongodb";
 
 export const transactionCreateHandler = (s:ServerConf): Handler => {
     return async(req:express.Request, resp:express.Response) => {
@@ -25,6 +26,7 @@ export const transactionCreateHandler = (s:ServerConf): Handler => {
                 transaction.cardId = cardId
                 try{
                     const trId = await saveTransaction(transaction,s.database,s.event)
+                    transaction._id = new ObjectId(trId)
                     writeResponse(resp, withStatusCode(200),withData({transactionId:trId, status:"created"}))
                     return
                 }catch(error){
