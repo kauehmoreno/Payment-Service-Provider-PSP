@@ -1,0 +1,37 @@
+import { ObjectId } from "mongodb";
+import { Transaction } from "../transactions/transactions";
+import { runRules, statusModified, payableModified, taxesModified } from "./rules";
+
+export enum Status{
+    paid = "paid",
+    waiting = "waiting_funds"
+}
+
+export interface Payable{
+    _id: ObjectId
+    transactionId: string
+    status:Status
+    createdAt: Date
+    total: number
+    taxes: number
+    payableAt: Date
+}
+
+
+export const newPayable = (transaction:Transaction): Payable => {
+    const payable = {
+        _id: new ObjectId(),
+        transactionId: transaction._id.toHexString(),
+        status: Status.paid,
+        createdAt: new Date(),
+        total: transaction.value? transaction.value : 0,
+        taxes: 0,
+        payableAt: new Date()
+    }
+
+    runRules(payable, statusModified(transaction.method),
+        payableModified(transaction.method),taxesModified(transaction.method))
+
+    return payable
+}
+
