@@ -1,3 +1,5 @@
+import e = require("express");
+
 const databaseSettings = (): any => {
     const env = process.env;
     return {
@@ -42,15 +44,16 @@ const cacheSettings = (): any => {
     }
 }
 
-export class Settings {
-    database():any {
-        return databaseSettings();
-    } 
-    aplication(): any{
-        return appSettings();
+const queueSettings = (): any =>{
+    const env = process.env;
+    return {
+        url: env.NATS_URL
     }
+}
 
-    cache(): any {
-        return cacheSettings()
-    }
+export class Settings {
+    database():any {return databaseSettings()} 
+    aplication(): any{return appSettings()}
+    cache(): any {return cacheSettings()}
+    queue():any {return queueSettings()}
 };
