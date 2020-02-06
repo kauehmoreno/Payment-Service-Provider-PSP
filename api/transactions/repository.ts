@@ -48,7 +48,7 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
         try{
             const transactions = await db.find<Transaction>(tableName.name, {createdAt:{$gte: new Date(Date.parse(date))}})
             try{
-                cache.set<Transaction[]>(`${transactionCacheKey}${date}`, transactions, JSON.stringify)    
+                await cache.set<Transaction[]>(`${transactionCacheKey}${date}`, transactions, JSON.stringify)    
                 return transactions
             }catch(err){
                 return transactions

@@ -45,7 +45,8 @@ export const cardById = async (id:string, cache:Storager, db:Reader):Promise<Car
                return undefined
             }
             try{
-                cache.set<Card>(`${cardCacheKey}${id}`, card, JSON.stringify)
+                await cache.set<Card>(`${cardCacheKey}${id}`, card, JSON.stringify)
+                return card
             }catch(err){
                 return card
             }
