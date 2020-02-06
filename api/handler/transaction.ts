@@ -2,12 +2,13 @@ import { ServerConf } from "../server/server";
 import { Handler } from "express";
 import * as express from "express";
 import { createTransaction, withValue, withMethod } from "../transactions/transactions";
-import { saveTransaction } from "../transactions/repository";
+import { saveTransaction, transactionsByDate } from "../transactions/repository";
 import { newCard, withCardNumber, withCardName, withExpireAt, withCardCvv } from "../card/card";
-import { writeResponse, withError, withStatusCode, withData } from "../core/response";
+import { writeResponse, withError, withStatusCode, withData, withCache } from "../core/response";
 import { saveCard } from "../card/repository";
 import { validatorErrCode } from "../validator/validator";
 import { ObjectId } from "mongodb";
+import { dateValidator } from "../transactions/rules";
 
 export const transactionCreateHandler = (s:ServerConf): Handler => {
     return async(req:express.Request, resp:express.Response) => {
@@ -48,6 +49,34 @@ export const transactionCreateHandler = (s:ServerConf): Handler => {
                 return
             }
             writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+        }
+    }
+}
+
+export const transactionByDateHandler = (s:ServerConf): Handler => {
+    return async(req:express.Request, resp:express.Response) => {
+        const date = req.params.date
+        if(!date){
+            writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+            return 
+        }
+
+        if(!s.database || !s.storage){
+            s.log.error(`database or storage are not provided`)
+            writeResponse(resp, withStatusCode(500),withError("something wrong happens"))
+            return  
+        }
+
+        try{
+            const transactions = await transactionsByDate(date, 30,s.storage,s.database, dateValidator(date))
+            writeResponse(resp,withStatusCode(200),withCache(120),withData(transactions))
+        }catch(err){
+            s.log.error(`transaction by date:${date} [${err.name}]:${err.message}`)
+            if(err.code && err.code === validatorErrCode){
+                writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+                return 
+            }
+            writeResponse(resp, withStatusCode(500),withError("something wrong happens"))
         }
     }
 }
