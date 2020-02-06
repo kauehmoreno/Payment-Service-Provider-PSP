@@ -136,6 +136,21 @@ describe("transaction repository",()=>{
                 expect(result[0].method).toBe("debit_card")
                 expect(result[0].description).toBe("my fake one")
             })
+            test("should return value from db and not throw error eventhgout set on cache fails",async ()=>{
+                const data = [createTransaction("my fake one",withValue(99.9),withMethod(paymentMethod.debit), withCard("fake-card-id"))]
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+                mockDb.find.mockResolvedValue(data)
+                mockStorager.set.mockRejectedValue(new Error("set on cache has failed"))
+                const result = await transactionsByDate(date, 10, mockStorager,mockDb, dateValidator(date),limitValidator(10))
+                expect(mockStorager.set.call.length).toBe(1)
+                expect(result).toHaveLength(1)
+                expect(result[0].cardId).toBe("fake-card-id")
+                expect(result[0].value).toBe(99.9)
+                expect(result[0].method).toBe("debit_card")
+                expect(result[0].description).toBe("my fake one")
+            })
         })
     })
 })
