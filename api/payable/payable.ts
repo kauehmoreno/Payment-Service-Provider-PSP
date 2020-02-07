@@ -11,7 +11,7 @@ export const payableCacheKey = "payable:"
 
 export interface Payable{
     _id: ObjectId
-    transactionId: string
+    transactionId: ObjectId
     status:Status
     createdAt: Date
     total: number
@@ -23,7 +23,7 @@ export interface Payable{
 export const newPayable = (transaction:Transaction): Payable => {
     const payable = {
         _id: new ObjectId(),
-        transactionId: transaction._id.toHexString(),
+        transactionId: transaction._id,
         status: Status.paid,
         createdAt: new Date(),
         total: transaction.value? transaction.value : 0,
