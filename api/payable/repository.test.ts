@@ -46,7 +46,7 @@ describe("payable repository",()=>{
                     expect(payable._id.toHexString()).toBe(insertedId)
                     expect(payable.transactionId.toHexString()).toHaveLength(24)
                     expect(payable.taxes).toBe(0.05)
-                    expect(payable.total).toBe(115.2)
+                    expect(payable.total).toBe(114.19)
                 })
                 await savePayable(payable,mockDb,notfier)
             })
