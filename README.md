@@ -19,7 +19,7 @@ Há uma rota que é possível resgatar as transações por data `${host}/transac
 `${host}/payable/transaction/${transactionId}` - payable transaction details
 `${host}/payable/client/${clientId}` - client balance 
 
-
+Foi usado como estratégia do serviço o conceito de cache ativo, a cada criação a chave de cache é criada e resetada para mantar o dado em cache sempre update. Foi usado o conceito de eventos para trigar essas ações.
 ### Setup do projeto
 
 Instalação das dependências e execução do projeto
