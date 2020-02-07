@@ -2,7 +2,7 @@ import { MongoClient, Db } from "mongodb"
 
 export interface Reader{
     get<T>(name: string, query: Object): Promise<T | null>
-    find<T>(name: string, query: Object): Promise<T[]>
+    find<T>(name: string, query: Object, limit?:number): Promise<T[]>
     count(name:string, limit: number, query:Object): Promise<number>
 }
 
@@ -90,8 +90,8 @@ const newDB = (cli: Db): Database => {
         get: async <T>(name: string, query: Object): Promise<T|null> =>{
             return await cli.collection(name).findOne(query)
         },
-        find:async<T>(name: string, query: Object): Promise<T[]> => {
-            return await cli.collection(name).find(query).toArray()
+        find:async<T>(name: string, query: Object, limit?:number): Promise<T[]> => {
+            return await cli.collection(name).find(query).limit(limit? limit : 30).toArray()
         },
         count: async (name: string, limit: number=10, query:Object): Promise<number>  => {
             try{
