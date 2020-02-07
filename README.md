@@ -8,7 +8,8 @@ API criada é responsável por simular transações PSP.
   - traefik
   - Nats.io
   - Worker in Node.js
-
+  - Typescript
+  
 ## Considerações do serviço
 A api permite que seja criada uma transação a partir da rota `${host}/transaction` atráves de um método *POST* . Nesse posta consta as informações de transação + client + cartão de crédito responsável. Após todas as validações o serviço irá salvar o cartão e transação e irá enfileirar no broker a criação de um payable. Todas as regras são inferidas, regras de D+30 baseado no tipo de pagamento, cartão de crédito D+30, cartão de débito D+0. 
 Há uma rota que é possível resgatar as transações por data `${host}/transaction/YYY-MM-DD`. Essa rota retornar apenas o id do cartão, para buscar o detalhe é preciso acessar `${host}/card/${id}` e o mesmo irá omitir retornar apenas os últimos quatros números do cartão. 
