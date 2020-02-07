@@ -14,7 +14,7 @@ export const onCreate = (cache:Storager,log: logger, queue:Queue, tr: Transactio
     })
     let dayTransaction = new Date().toJSON()
     dayTransaction = dayTransaction.split("T")[0]
-    cache.delete(`${transactionCacheKey}${dayTransaction}`).catch(err=>{
+    cache.delete([`${transactionCacheKey}${dayTransaction}`,`${transactionCacheKey}${tr.clientId}`]).catch(err=>{
         log.error(err, `could not delete transaction from: ${dayTransaction}`)
     })
     try{
