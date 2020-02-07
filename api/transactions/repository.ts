@@ -58,3 +58,29 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
         }
     }
 }
+
+export const transactionByClientId = async(clientId:string, limit:number, cache:Storager, db:Reader):Promise<Transaction[]> => {
+    try{
+        return await new Promise((resolve, reject)=>{
+            cache.get<Transaction>(`${transactionCacheKey}${clientId}`, (error:Error|null, reply:any)=>{
+                if(error){
+                    reject(error)
+                    return
+                }
+                reply ? resolve(JSON.parse(reply)) : reject(new Error("not found"))
+            })
+        })
+    }catch(err){
+        try{
+            const transactions = await db.find<Transaction>(tableName.name, {clientId: clientId}, limit)
+            try{
+                await cache.set<Transaction[]>(`${transactionCacheKey}${clientId}`, transactions, JSON.stringify)    
+                return transactions
+            }catch(err){
+                return transactions
+            }
+        }catch(err){
+            throw new Error(`could not find transactions by client id:${clientId} [${err.name}]:${err.message}`)
+        }
+    }
+}
