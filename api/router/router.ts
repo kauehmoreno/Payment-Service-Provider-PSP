@@ -1,7 +1,9 @@
 import { ServerConf } from "../server/server";
 import { middlewareBuilder } from "./middleware";
 import { healthcheckHandler } from "../handler/healthcheck";
-import { transactionCreateHandler } from "../handler/transaction";
+import { transactionCreateHandler, transactionByDateHandler } from "../handler/transaction";
+import { cardByIdHandle } from "../handler/card";
+import { payableByTransactionIdHandler } from "../handler/payable";
 
 export const routerBuilder = (server: ServerConf): void => {
     middlewareBuilder(server)
@@ -15,8 +17,19 @@ const healthCheckRouter = (server: ServerConf): void => {
 
 const publicRouter = (server: ServerConf): void => {
     transactionRouter(server)
+    cardRouter(server)
+    payableRouter(server)
 }
 
 const transactionRouter = (server: ServerConf): void => {
-    server.app.post("/transanction", transactionCreateHandler(server))
+    server.app.post("/transaction", transactionCreateHandler(server))
+    server.app.get("/transaction/:date",transactionByDateHandler(server))
+}
+
+const cardRouter = (server:ServerConf): void => {
+    server.app.get("/card/:id",cardByIdHandle(server))
+}
+
+const payableRouter = (server:ServerConf): void => {
+    server.app.get("/payable/transaction/:id",payableByTransactionIdHandler(server))
 }
