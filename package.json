@@ -4,7 +4,7 @@
   "description": "payment service provider simulation",
   "main": "main.js",
   "scripts": {
-    "test": "jest --watch ./dist/",
+    "test": "tsc && jest ./dist/",
     "run-local": "pm2-runtime start main.js",
     "run-worker": "pm2-runtime start worker/main.js",
     "watch": "docker-compose up",

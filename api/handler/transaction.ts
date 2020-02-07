@@ -56,7 +56,7 @@ export const transactionByDateHandler = (s:ServerConf): Handler => {
     return async(req:express.Request, resp:express.Response) => {
         const date = req.params.date
         if(!date){
-            writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+            writeResponse(resp, withStatusCode(400),withError("invalid request params"))
             return 
         }
 
@@ -72,7 +72,7 @@ export const transactionByDateHandler = (s:ServerConf): Handler => {
         }catch(err){
             s.log.error(`transaction by date:${date} [${err.name}]:${err.message}`)
             if(err.code && err.code === validatorErrCode){
-                writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+                writeResponse(resp, withStatusCode(400),withError("invalid request params"))
                 return 
             }
             writeResponse(resp, withStatusCode(500),withError("something wrong happens"))
