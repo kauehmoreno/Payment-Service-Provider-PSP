@@ -17,7 +17,7 @@ export const payableByTransactionIdHandler = (server:ServerConf): Handler => {
             return 
         }
         try{
-            const payable = payableByTransactionId(id, server.storage, server.database)
+            const payable = await payableByTransactionId(id, server.storage, server.database)
             writeResponse(resp, withStatusCode(200),withCache(120),withData(payable))
         }catch(error){
             server.log.error(`payable transactionId: ${id} [${error.name}]:${error.message}`)
