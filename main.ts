@@ -1,12 +1,13 @@
 import * as express from 'express';
 import *as env from 'dotenv';
-import { serverBuild } from './api/server/server';
+import { serverBuild, serverWithQueue } from './api/server/server';
 import { connDB, withUrl, withConnectionOpts, withDatabase } from './api/db/db';
 import { routerBuilder } from './api/router/router';
 import { connectStorage, withHost, withPort, withKeepAlive, withConnTimeout, withPassword } from './api/cache/cache';
 import { Settings } from './api/settings/settings';
 import { connectQueue, withQueueURL } from './api/queue/queue';
 import { backoff } from './api/core/backoff';
+import { registerEvent } from './api/server/events';
 
 
 const application = express()
@@ -20,9 +21,11 @@ const envSetup = () => {
 
 envSetup()
 
+
 const settings = new Settings()
 connectQueue(withQueueURL(settings.queue().url)).then(queue => {
-    const serverConf = serverBuild(application, settings)
+    const serverConf = serverBuild(application, settings, serverWithQueue(queue))
+    registerEvent(serverConf)
     // routers setup
     routerBuilder(serverConf)
     application.listen(8000, function(){

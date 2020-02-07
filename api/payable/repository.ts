@@ -33,7 +33,7 @@ export const payableByTransactionId = async (trId: string, cache:Storager, db:Re
         })
     }catch(error){
         try{
-            const payable = await db.get<Payable>(tableName.name,{transactionId: new ObjectId(trId)})
+            const payable = await db.get<Payable>(tableName.name,{transactionId: trId})
             if(!payable){
                return null
             }

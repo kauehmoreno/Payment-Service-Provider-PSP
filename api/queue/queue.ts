@@ -61,7 +61,7 @@ export const connectQueue = async (...configs:config[]): Promise<Queue> => {
     configs.forEach(config => {
         config(queueConf)
     });
-    const opts = queueConf.servers ? {server: queueConf.servers} : {url:queueConf.url}
+    const opts = queueConf.servers ? {server: queueConf.servers,payload: queueConf.payload} : {url:queueConf.url, payload: queueConf.payload}
 
     const conn = await connect(opts)
     return newQueue(conn)
