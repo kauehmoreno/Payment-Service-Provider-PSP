@@ -1,5 +1,5 @@
-import { saveTransaction, transactionsByDate } from "./repository"
-import { createTransaction, withValue, withMethod, paymentMethod, withCard, Transaction } from "./transactions"
+import { saveTransaction, transactionsByDate, transactionByClientId } from "./repository"
+import { createTransaction, withValue, withMethod, paymentMethod, withCard, Transaction, withClientId } from "./transactions"
 import { v4 as uuid } from "uuid"
 import { EventEmitter } from "events"
 import { transactionEvent } from "./events"
@@ -152,5 +152,65 @@ describe("transaction repository",()=>{
                 expect(result[0].description).toBe("my fake one")
             })
         })
+    })
+    describe("transaction by client id",()=>{
+        describe("all cases",()=>{
+            const clientId = new ObjectId().toHexString()
+            const data = [createTransaction("my fake one",withValue(99.9),
+            withMethod(paymentMethod.debit), withCard("fake-card-id"),withClientId(clientId))]
+
+            test("should retrieve item from caches wheneve finds it",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, JSON.stringify(data))
+                })
+
+                const tr = await transactionByClientId(clientId, 10, mockStorager,mockDb)
+                expect(tr).toHaveLength(1)
+                expect(tr[0].clientId).toBe(clientId)
+            })
+            test("should look at db whenever cache fails or not find an key",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+
+                mockDb.find.mockResolvedValue(data)
+                const tr = await transactionByClientId(clientId, 10, mockStorager,mockDb)
+                expect(tr).toHaveLength(1)
+                expect(tr[0].clientId).toBe(clientId)
+                expect(mockDb.find.call.length).toBe(1)
+            })
+            test("should return value even though set value back to cache fails",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+                mockDb.find.mockResolvedValue(data)
+                mockStorager.set.mockRejectedValue(new Error("could not set value on cache"))
+                const tr = await transactionByClientId(clientId, 10, mockStorager,mockDb)
+                expect(tr).toHaveLength(1)
+                expect(tr[0].clientId).toBe(clientId)
+                expect(mockDb.find.call.length).toBe(1)
+                expect(mockStorager.set.call.length).toBe(1)
+            })
+            test("should throw error if fails to get date from database",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+                mockDb.find.mockRejectedValue(new Error("fail to retrieve item from db"))
+                transactionByClientId(clientId, 10, mockStorager,mockDb).catch(err => {
+                    expect(err.message).toBe(`could not find transactions by client id:${clientId} [Error]:fail to retrieve item from db`)
+                })
+                expect(mockDb.find.call.length).toBe(1)
+            })
+            test("should return empty if nothings is found",async()=>{
+                mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
+                    cb(null, null)
+                })
+
+                mockDb.find.mockResolvedValue([])
+                const tr = await transactionByClientId(clientId, 10, mockStorager,mockDb)
+                expect(tr).toHaveLength(0)
+                expect(mockDb.find.call.length).toBe(1)
+            })
+        })  
     })
 })

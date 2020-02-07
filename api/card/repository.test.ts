@@ -106,5 +106,22 @@ describe("card repository",()=>{
                 expect(mockStorager.set.call.length).toBe(1) 
             })
         })
+        describe("error case",()=>{
+            test("should return error whenever db fails",async()=>{
+                const card = newCard(withCardNumber("5168441223630339"),withCardName("MY CARD NAME"),
+                withExpireAt("09/2027"),withCardCvv(233))
+                mockStorager.get.mockImplementation((key:string,cb:(error:Error|null,reply:any)=>void)=>{
+                    cb(null, null)
+                })
+                const id = new ObjectId()
+                card._id = id
+                mockDb.get.mockRejectedValue(new Error("fail to get item on db"))
+                cardById(id.toHexString(),mockStorager,mockDb).catch(err=>{
+                    expect(err.message).toBe(`could not get card:${id.toHexString()} [Error]:fail to get item on db`)
+                })
+                expect(mockDb.get.call.length).toBe(1)
+                expect(mockStorager.get.call.length).toBe(1)
+            })
+        })
     })
 })
