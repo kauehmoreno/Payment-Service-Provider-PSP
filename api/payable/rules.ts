@@ -28,6 +28,27 @@ export const taxesModified = (method?: paymentMethod): Rules => {
     }
 }
 
+export interface Balance {
+    available:number
+    waitingFunds:number
+}
+
+export const buildPaybleBalance = (...payables:(Payable|null)[] ): Balance => {
+    let balance:Balance = {
+        available:0,
+        waitingFunds:0
+    }
+    for (const payable of payables) {
+        if (!payable) continue
+        if (payable.status === Status.paid){
+            balance.available += payable.total
+        }else{
+            balance.waitingFunds +=payable.total
+        }
+    }
+    return balance
+}
+
 const calculateTaxesAndDiscount = (payable: Payable, taxes: number): void => {
     payable.taxes = taxes
     const totalWithDiscount = calaculateDiscount(payable.total, payable.taxes)
@@ -41,5 +62,5 @@ const payableDPlus30 = (): Date => {
 }
 
 const calaculateDiscount = (total: number, taxes: number): number => {
-    return total - (100*taxes)
+    return total * (1-taxes)
 }
