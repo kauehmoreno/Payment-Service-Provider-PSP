@@ -2,6 +2,7 @@ import { Queue } from "../queue/queue"
 import { Storager } from "../cache/cache"
 import * as logger from 'bunyan';
 import { Transaction, transactionCacheKey } from "./transactions";
+import { Logger } from "mongodb";
 
 export const transactionEvent = {
     onCreate: (): string => "transaction_created"
@@ -9,17 +10,28 @@ export const transactionEvent = {
 
 export const onCreate = (cache:Storager,log: logger, queue:Queue, tr: Transaction): void => {
     const key = `${transactionCacheKey}${tr._id.toHexString()}`
-    cache.set<Transaction>(key, tr, JSON.stringify).catch(err=>{
-        log.error(err, "could not set transaction on cache")
+
+    tryAndLog(log, ()=> {
+        cache.set<Transaction>(key, tr, JSON.stringify)
     })
+    
     let dayTransaction = new Date().toJSON()
     dayTransaction = dayTransaction.split("T")[0]
-    cache.delete([`${transactionCacheKey}${dayTransaction}`,`${transactionCacheKey}${tr.clientId}`]).catch(err=>{
-        log.error(err, `could not delete transaction from: ${dayTransaction}`)
+
+    tryAndLog(log, ()=>{
+        cache.delete([`${transactionCacheKey}${dayTransaction}`,`${transactionCacheKey}${tr.clientId}`])
     })
-    try{
+
+    tryAndLog(log, ()=>{
         queue.publish(transactionEvent.onCreate(), tr)
+    })
+}
+
+
+const tryAndLog = (log:logger, cb: ()=>void) => {
+    try{
+        cb()
     }catch(err){
-        log.error(`could not queue ${tr._id}: [${err.name}]: ${err.message}`)
+        log.error(err)
     }
 }
