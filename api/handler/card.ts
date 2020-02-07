@@ -8,7 +8,7 @@ import { cardById } from "../card/repository";
         return async(req:express.Request, resp:express.Response) =>{
             const id = req.params.id
             if(!id){
-                writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+                writeResponse(resp, withStatusCode(400),withError("invalid request params"))
                 return
             }
             if(!s.database || !s.storage){
@@ -19,9 +19,11 @@ import { cardById } from "../card/repository";
             try{
                 const card = await cardById(id,s.storage,s.database)
                 writeResponse(resp, withStatusCode(200),withCache(120),withData(card))
+                return
             }catch(err){
                 s.log.error(`card:${id} [${err.name}]:${err.message}`)
                 writeResponse(resp, withStatusCode(500),withError("something wrong happens"))
+                return
             }
         }
     }
