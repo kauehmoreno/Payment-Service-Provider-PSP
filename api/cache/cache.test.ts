@@ -58,5 +58,15 @@ describe("storager test case",()=>{
             const ok = await storager.delete(cacheKey)
             expect(ok).toBeTruthy()
         })
+        test("should delete multiples keys ate once",async()=>{
+            const cacheKey = "existing-key"
+            const isInsert = await storager.set<string>(cacheKey,"hello item",JSON.stringify)
+            const cacheKey2 = "existing-key2"
+            const isInsert2 = await storager.set<string>(cacheKey,"hello item",JSON.stringify)
+            expect(isInsert).toBeTruthy()
+            expect(isInsert2).toBeTruthy()
+            const ok = await storager.delete([cacheKey,cacheKey2])
+            expect(ok).toBeTruthy()
+        })
     })
 })
