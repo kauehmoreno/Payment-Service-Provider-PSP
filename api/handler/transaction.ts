@@ -12,7 +12,7 @@ import { dateValidator } from "../transactions/rules";
 export const transactionCreateHandler = (s:ServerConf): Handler => {
     return async(req:express.Request, resp:express.Response) => {
         const body = req.body
-        if(!body.card){
+        if(!body || !body.card){
             writeResponse(resp, withStatusCode(400),withError("invalid body request"))
             return
         }
@@ -47,7 +47,7 @@ export const transactionCreateHandler = (s:ServerConf): Handler => {
                 writeResponse(resp, withStatusCode(400),withError("invalid body request to card"))
                 return
             }
-            writeResponse(resp, withStatusCode(400),withError("invalid body request"))
+            writeResponse(resp, withStatusCode(500),withError("something got wrong"))
         }
     }
 }
