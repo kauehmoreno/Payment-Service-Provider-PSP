@@ -6,6 +6,7 @@ import { routerBuilder } from './api/router/router';
 import { connectStorage, withHost, withPort, withKeepAlive, withConnTimeout, withPassword } from './api/cache/cache';
 import { Settings } from './api/settings/settings';
 import { connectQueue, withQueueURL } from './api/queue/queue';
+import { backoff } from './api/core/backoff';
 
 
 const application = express()
@@ -26,13 +27,17 @@ connectQueue(withQueueURL(settings.queue().url)).then(queue => {
     routerBuilder(serverConf)
     application.listen(8000, function(){
         const dbSettings = serverConf.settings.database()
-        connDB(withUrl(dbSettings.url), withConnectionOpts(dbSettings.options), withDatabase(dbSettings.databae)).then(db =>{
-            serverConf.database = db
-        }).catch(err => {
-            serverConf.log.error(`fail to config db on app setup: [${err.name}]:${err.message}`)
-        })
+
+        backoff(10, async()=> {
+            connDB(withUrl(dbSettings.url), withConnectionOpts(dbSettings.options), withDatabase(dbSettings.databae)).then(db =>{
+                serverConf.database = db
+            }).catch(err => {
+                serverConf.log.error(`fail to config db on app setup: [${err.name}]:${err.message}`)
+                throw err
+            })
+        },20)
+
         const storagerSettings = serverConf.settings.cache()
-        
         try{
             const storage = connectStorage(
                 withHost(storagerSettings.host), withPort(storagerSettings.port),
