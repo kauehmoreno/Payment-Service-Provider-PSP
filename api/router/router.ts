@@ -3,7 +3,7 @@ import { middlewareBuilder } from "./middleware";
 import { healthcheckHandler } from "../handler/healthcheck";
 import { transactionCreateHandler, transactionByDateHandler } from "../handler/transaction";
 import { cardByIdHandle } from "../handler/card";
-import { payableByTransactionIdHandler } from "../handler/payable";
+import { payableByTransactionIdHandler, payableByClientIdHandler } from "../handler/payable";
 
 export const routerBuilder = (server: ServerConf): void => {
     middlewareBuilder(server)
@@ -32,4 +32,5 @@ const cardRouter = (server:ServerConf): void => {
 
 const payableRouter = (server:ServerConf): void => {
     server.app.get("/payable/transaction/:id",payableByTransactionIdHandler(server))
+    server.app.get("/payable/client/:clientId",payableByClientIdHandler(server))
 }
