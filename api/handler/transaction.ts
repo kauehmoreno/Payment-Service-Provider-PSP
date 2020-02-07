@@ -1,7 +1,7 @@
 import { ServerConf } from "../server/server";
 import { Handler } from "express";
 import * as express from "express";
-import { createTransaction, withValue, withMethod } from "../transactions/transactions";
+import { createTransaction, withValue, withMethod, withClientId } from "../transactions/transactions";
 import { saveTransaction, transactionsByDate } from "../transactions/repository";
 import { newCard, withCardNumber, withCardName, withExpireAt, withCardCvv } from "../card/card";
 import { writeResponse, withError, withStatusCode, withData, withCache } from "../core/response";
@@ -23,7 +23,7 @@ export const transactionCreateHandler = (s:ServerConf): Handler => {
             writeResponse(resp, withStatusCode(500),withError("something wrong happens"))
             return  
         }
-        const transaction = createTransaction(body.description, withValue(body.value), withMethod(body.paymentMethod))
+        const transaction = createTransaction(body.description, withValue(body.value), withMethod(body.paymentMethod),withClientId(body.clientId))
         const card = newCard(withCardNumber(body.card.number),withCardName(body.card.name), 
             withExpireAt(body.card.expireAt), withCardCvv(body.card.cvv))
         try{
