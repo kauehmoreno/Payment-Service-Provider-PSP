@@ -44,7 +44,7 @@ describe("payable repository",()=>{
                 const notfier = new EventEmitter()
                 notfier.on(payableEvent.onCreate(), (payable: Payable)=>{
                     expect(payable._id.toHexString()).toBe(insertedId)
-                    expect(payable.transactionId).toHaveLength(24)
+                    expect(payable.transactionId.toHexString()).toHaveLength(24)
                     expect(payable.taxes).toBe(0.05)
                     expect(payable.total).toBe(115.2)
                 })
