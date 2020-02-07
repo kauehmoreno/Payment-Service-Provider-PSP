@@ -1,15 +1,14 @@
 import { Queue } from "../queue/queue"
 import { Storager } from "../cache/cache"
 import * as logger from 'bunyan';
-import { Transaction, transactionCacheKey } from "./transactions";
-import { Logger } from "mongodb";
+import { Transaction, transactionCacheKey, transactionClientCacheKey } from "./transactions";
 
 export const transactionEvent = {
     onCreate: (): string => "transaction_created"
 }
 
 export const onCreate = (cache:Storager,log: logger, queue:Queue, tr: Transaction): void => {
-    const key = `${transactionCacheKey}${tr._id.toHexString()}`
+    const key = `${transactionCacheKey}${tr._id}`
 
     tryAndLog(log, ()=> {
         cache.set<Transaction>(key, tr, JSON.stringify)
@@ -19,7 +18,10 @@ export const onCreate = (cache:Storager,log: logger, queue:Queue, tr: Transactio
     dayTransaction = dayTransaction.split("T")[0]
 
     tryAndLog(log, ()=>{
-        cache.delete([`${transactionCacheKey}${dayTransaction}`,`${transactionCacheKey}${tr.clientId}`])
+        cache.delete([
+            `${transactionCacheKey}${dayTransaction}`,
+            `${transactionClientCacheKey}${tr.clientId}`
+        ])
     })
 
     tryAndLog(log, ()=>{
@@ -32,6 +34,6 @@ const tryAndLog = (log:logger, cb: ()=>void) => {
     try{
         cb()
     }catch(err){
-        log.error(err)
+        log.error(err.message)
     }
 }

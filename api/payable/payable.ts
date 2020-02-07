@@ -10,8 +10,8 @@ export enum Status{
 export const payableCacheKey = "payable:"
 
 export interface Payable{
-    _id: ObjectId
-    transactionId: ObjectId
+    _id: string
+    transactionId: string
     status:Status
     createdAt: Date
     total: number
@@ -22,7 +22,7 @@ export interface Payable{
 
 export const newPayable = (transaction:Transaction): Payable => {
     const payable = {
-        _id: new ObjectId(),
+        _id: new ObjectId().toHexString(),
         transactionId: transaction._id,
         status: Status.paid,
         createdAt: new Date(),

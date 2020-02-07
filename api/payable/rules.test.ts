@@ -5,8 +5,8 @@ import { newPayable, Payable, Status } from "./payable"
 
 const generatePayable = (id: string, value: number) : Payable => {
     return {
-        _id: new ObjectId(),
-        transactionId: new ObjectId(id),
+        _id: new ObjectId().toHexString(),
+        transactionId: new ObjectId(id).toHexString(),
         status: Status.paid,
         createdAt: new Date(),
         total: value,

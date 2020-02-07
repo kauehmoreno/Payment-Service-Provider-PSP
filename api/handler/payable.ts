@@ -4,9 +4,7 @@ import * as express from "express";
 import { writeResponse, withStatusCode, withError, withCache, withData } from "../core/response";
 import { payableByTransactionId } from "../payable/repository";
 import { transactionByClientId } from "../transactions/repository";
-import { Status, Payable } from "../payable/payable";
 import { buildPaybleBalance } from "../payable/rules";
-import { promises } from "dns";
 
 export const payableByTransactionIdHandler = (server:ServerConf): Handler => {
     return async(req:express.Request, resp:express.Response) =>{
@@ -48,7 +46,7 @@ export const payableByClientIdHandler = (server:ServerConf): Handler => {
         try{
             const transactions = await transactionByClientId(clientId,30, server.storage, server.database)
             const payableResults = await Promise.all(transactions.map(async tr => {
-                if(server.storage && server.database) return await payableByTransactionId(tr._id.toHexString(), server.storage, server.database) 
+                if(server.storage && server.database) return await payableByTransactionId(tr._id, server.storage, server.database) 
                 return null
             }))
             const balance = buildPaybleBalance(...payableResults)

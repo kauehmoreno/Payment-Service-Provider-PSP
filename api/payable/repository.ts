@@ -12,11 +12,11 @@ enum tableName {
 export const savePayable = async(payable:Payable,db:Writer, notifer?:EventEmitter): Promise<string> =>{
     try{
         const result = await db.insert(tableName.name, [payable])
-        payable._id = new ObjectId(result[0])
+        payable._id = new ObjectId(result[0]).toHexString()
         notifer?.emit(payableEvent.onCreate(), payable)
-        return payable._id.toHexString()
+        return payable._id
     }catch(err){
-        throw new Error(`could not save payable:${payable._id.toHexString()} [${err.name}]: ${err.message}`)
+        throw new Error(`could not save payable:${payable._id} [${err.name}]: ${err.message}`)
     }
 }
 

@@ -50,8 +50,8 @@ describe("payable repository",()=>{
                 mockDb.insert.mockResolvedValue([insertedId])
                 const notfier = new EventEmitter()
                 notfier.on(payableEvent.onCreate(), (payable: Payable)=>{
-                    expect(payable._id.toHexString()).toBe(insertedId)
-                    expect(payable.transactionId.toHexString()).toHaveLength(24)
+                    expect(payable._id).toBe(insertedId)
+                    expect(payable.transactionId).toHaveLength(24)
                     expect(payable.taxes).toBe(0.05)
                     expect(payable.total).toBe(114.19)
                 })
@@ -73,8 +73,8 @@ describe("payable repository",()=>{
                  mockStorager.get.mockImplementation((key:string,cb:(error:Error|null,reply:any)=>void)=>{
                      cb(null, JSON.stringify(payable))
                  })
-                const result = await payableByTransactionId(payable._id.toHexString(),mockStorager,mockDb)
-                expect(result?._id).toBe(payable._id.toHexString())
+                const result = await payableByTransactionId(payable._id,mockStorager,mockDb)
+                expect(result?._id).toBe(payable._id)
             })
             test("should retrieve item on db whenever cache does not find or fail and it cache back to set value",async()=>{
                 const payable = generatePayable()
@@ -82,10 +82,10 @@ describe("payable repository",()=>{
                      cb(null, null)
                  })
                  const id = new ObjectId()
-                 payable._id = id
+                 payable._id = id.toHexString()
                  mockDb.get.mockResolvedValue(payable)
                  const result = await payableByTransactionId(id.toHexString(),mockStorager,mockDb)
-                 expect(result?._id.toHexString()).toBe(id.toHexString())
+                 expect(result?._id).toBe(id.toHexString())
                  expect(mockStorager.set.call.length).toBe(1)
             })
             test("should not return error if fails to set on cache",async()=>{
@@ -94,11 +94,11 @@ describe("payable repository",()=>{
                     cb(null, null)
                 })
                 const id = new ObjectId()
-                payable._id = id
+                payable._id = id.toHexString()
                 mockDb.get.mockResolvedValue(payable)
                 mockStorager.set.mockRejectedValue(new Error("fail to set value into cache"))
                 const result = await payableByTransactionId(id.toHexString(),mockStorager,mockDb)
-                expect(result?._id.toHexString()).toBe(id.toHexString())
+                expect(result?._id).toBe(id.toHexString())
                 expect(mockStorager.set.call.length).toBe(1) 
             })
         })

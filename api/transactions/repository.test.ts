@@ -57,7 +57,7 @@ describe("transaction repository",()=>{
                 const notifier = new EventEmitter()
 
                 notifier.on(transactionEvent.onCreate(), (tr: Transaction)=>{
-                    expect(tr._id).toBe(resolveId)
+                    expect(tr._id).toBe(resolveId.toHexString())
                     expect(tr.method).toBe(paymentMethod.debit)
                     expect(tr.description).toBe("my mock transaction")
                     expect(tr.value).toBe(10)
@@ -168,7 +168,7 @@ describe("transaction repository",()=>{
                 expect(tr).toHaveLength(1)
                 expect(tr[0].clientId).toBe(clientId)
             })
-            test("should look at db whenever cache fails or not find an key",async()=>{
+            test("should look at db whenever cache fails or not find an key",async()=>{``
                 mockStorager.get.mockImplementation((key:string, cb:(error:Error|null, reply:any)=>void)=>{
                     cb(null, null)
                 })

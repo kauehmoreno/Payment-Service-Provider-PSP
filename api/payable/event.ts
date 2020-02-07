@@ -7,7 +7,7 @@ export const payableEvent = {
 }
 
 export const onCreate = (cache:Storager, log: logger, payable: Payable): void => {
-    const key = `${payableCacheKey}${payable._id.toHexString()}`
+    const key = `${payableCacheKey}${payable._id}`
     cache.set<Payable>(key, payable, JSON.stringify).catch(err=>{
         log.error(err, "could not set payable on cache")
     })

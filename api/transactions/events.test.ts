@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import * as logger from 'bunyan';
-import { createTransaction, withValue, withMethod, paymentMethod, withCard, withClientId, transactionCacheKey } from "./transactions"
+import { createTransaction, withValue, withMethod, paymentMethod, withCard, withClientId, transactionCacheKey, transactionClientCacheKey } from "./transactions"
 import { onCreate } from "./events"
 import { newQueue } from "../queue/queue";
 import { mockQueue } from "../queue/queue.test";
@@ -29,7 +29,7 @@ describe("transaction events",()=>{
         test("should execute set value on cache by transaction id",()=>{
             const queue = newQueue(new mockQueue())
             mockStorager.set.mockImplementation((key:string,cb:(error:Error|null,reply:any)=>void)=>{
-                expect(key).toBe(`${transactionCacheKey}${transaction._id.toHexString()}`)
+                expect(key).toBe(`${transactionCacheKey}${transaction._id}`)
             })
             onCreate(mockStorager,log, queue, transaction)
             expect(mockStorager.set.call.length).toBe(1)
@@ -39,7 +39,7 @@ describe("transaction events",()=>{
             mockStorager.delete.mockImplementation((keys:string[])=>{
                 expect(keys).toHaveLength(2)
                 expect(keys[0]).toBe(`${transactionCacheKey}${transaction.createdAt.toJSON().split("T")[0]}`)
-                expect(keys[1]).toBe(`${transactionCacheKey}${transaction.clientId}`)
+                expect(keys[1]).toBe(`${transactionClientCacheKey}${transaction.clientId}`)
             })
             onCreate(mockStorager,log, queue, transaction)
         })

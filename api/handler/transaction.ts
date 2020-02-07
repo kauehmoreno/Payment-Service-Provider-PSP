@@ -31,7 +31,7 @@ export const transactionCreateHandler = (s:ServerConf): Handler => {
             transaction.cardId = cardId
             try{
                 const trId = await saveTransaction(transaction,s.database,s.event)
-                transaction._id = new ObjectId(trId)
+                transaction._id = trId
                 writeResponse(resp, withStatusCode(200),withData({transactionId:trId, status:"created"}))
                 return
             }catch(error){

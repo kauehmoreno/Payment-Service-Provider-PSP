@@ -1,4 +1,4 @@
-import { Transaction, transactionCacheKey } from "./transactions";
+import { Transaction, transactionCacheKey, transactionClientCacheKey } from "./transactions";
 import { Storager } from "../cache/cache";
 import { Writer, Reader } from "../db/db";
 import { EventEmitter } from "events";
@@ -18,9 +18,9 @@ export const saveTransaction = async (transaction: Transaction, db:Writer, notif
     }
     try{
         const result = await db.insert(tableName.name, [transaction])
-        transaction._id = new ObjectId(result[0])
+        transaction._id = new ObjectId(result[0]).toHexString()
         notifer?.emit(transactionEvent.onCreate(), transaction)
-        return transaction._id.toHexString()
+        return transaction._id
     }catch(err){
         throw new Error(`could not save transaction [${err.name}]: ${err.message}`)
     }
@@ -62,7 +62,7 @@ export const transactionsByDate = async(date: string, limit:number, cache:Storag
 export const transactionByClientId = async(clientId:string, limit:number, cache:Storager, db:Reader):Promise<Transaction[]> => {
     try{
         return await new Promise((resolve, reject)=>{
-            cache.get<Transaction>(`${transactionCacheKey}${clientId}`, (error:Error|null, reply:any)=>{
+            cache.get<Transaction>(`${transactionClientCacheKey}${clientId}`, (error:Error|null, reply:any)=>{
                 if(error){
                     reject(error)
                     return
@@ -74,7 +74,7 @@ export const transactionByClientId = async(clientId:string, limit:number, cache:
         try{
             const transactions = await db.find<Transaction>(tableName.name, {clientId: clientId}, limit)
             try{
-                await cache.set<Transaction[]>(`${transactionCacheKey}${clientId}`, transactions, JSON.stringify)    
+                await cache.set<Transaction[]>(`${transactionClientCacheKey}${clientId}`, transactions, JSON.stringify)    
                 return transactions
             }catch(err){
                 return transactions

@@ -8,9 +8,10 @@ export enum paymentMethod{
 }
 
 export const transactionCacheKey = "transaction:"
+export const transactionClientCacheKey = `${transactionCacheKey}clientId:`
 
 export interface Transaction{
-    _id: ObjectId
+    _id: string
     value?: number
     description?:string
     createdAt: Date
@@ -48,7 +49,7 @@ export const withMethod = (paymentMethod: paymentMethod): transactionBuilder => 
 
 export const createTransaction = (description: string, ...builders:transactionBuilder[]): Transaction => {
     const tr = {
-        _id: new ObjectId(),
+        _id: new ObjectId().toHexString(),
         createdAt: new Date(),
         cardId: "",
         clientId: "",
