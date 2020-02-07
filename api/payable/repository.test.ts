@@ -19,6 +19,13 @@ const mockStorager = {
     delete: jest.fn().mockReturnThis(),
 }
 
+afterEach(()=>{
+    mockDb.insert.mockReset()
+    mockDb.find.mockReset()
+    mockStorager.set.mockReset()
+    mockStorager.get.mockReset()
+})
+
 
 describe("payable repository",()=>{
     const generatePayable = (): Payable => newPayable(

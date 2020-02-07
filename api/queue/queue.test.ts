@@ -2,7 +2,6 @@ import { newQueue } from "./queue"
 import {Client, Subscription, Sub, Msg} from 'ts-nats';
 import {v4 as uuid} from "uuid"
 import { ProtocolHandler } from "ts-nats/lib/protocolhandler";
-import { EventEmitter } from "events";
 
 const chars = 'a-zA-Z0-9\\-\\_';
 /**
@@ -10,7 +9,9 @@ const chars = 'a-zA-Z0-9\\-\\_';
  */
 let _subs = new Map();
 
-class mockQueue extends Client {
+export class mockQueue extends Client {
+
+    publishCall:number = 0
      /**
      * The mocked transport's subs for testing purposes.
      */
@@ -29,10 +30,14 @@ class mockQueue extends Client {
         cb ? cb() : null
     }
     publish(subject: string, data?: any, reply?: string | undefined): void {
+        this.publishCall +=1
         const subs = this._getSubsBySubject(subject);
         for (const sub of subs) {
             sub.callback(subject, reply, data);
         }
+    }
+    publishCalls(): number {
+        return this.publishCall
     }
     static connect() {
         const nats =  new mockQueue();
