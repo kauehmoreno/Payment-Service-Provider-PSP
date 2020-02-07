@@ -86,7 +86,7 @@ services:
         - traefik.enable=false
       restart: always
       environment: 
-        MONGO_INITDB_ROOT_USERNAME: psp-user
+        MONGO_INITDB_ROOT_USERNAME: psp-login
         MONGO_INITDB_ROOT_PASSWORD: psp-password
   broker:
     image: nats:2.0.0-linux

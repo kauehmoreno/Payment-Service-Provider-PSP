@@ -6,11 +6,11 @@
   "scripts": {
     "test": "jest --watch ./dist/",
     "run-local": "node main.js",
-    "run-worker":"node worker/main.js",
+    "run-worker": "node worker/main.js",
     "watch": "docker-compose up",
     "start": "docker-compose up -d",
     "stop": "docker-compose down -v --remove-orphans",
-    "build": "docker-compose build"
+    "build": "tsc && docker-compose build"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "mongodb-core": "^3.2.7",
     "nats": "^1.4.0",
     "redis": "^2.8.0",
+    "ts-nats": "^1.2.4",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
@@ -52,7 +53,6 @@
     "jest": "^25.1.0",
     "redis-mock": "^0.48.0",
     "ts-jest": "^25.2.0",
-    "ts-nats": "^1.2.4",
     "typescript": "^3.7.5"
   }
 }
