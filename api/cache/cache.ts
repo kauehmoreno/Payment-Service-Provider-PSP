@@ -6,7 +6,7 @@ type CallbackResponser<T> = (err:Error|null, reply:any) => any
 export interface Storager{
     get<T>(key:string, cb:CallbackResponser<T>): Promise<T>
     set<T>(key:string, value: T, marshaller:Marshaller): Promise<boolean>
-    delete(key:string):Promise<boolean>
+    delete(key:string|string[]):Promise<boolean>
 }
 
 export interface StorageSetup {
@@ -76,7 +76,7 @@ export const newStorage = (cli: provider.RedisClient): Storager => {
                 return Promise.resolve(false)
             }
         },
-        delete: async (key:string):Promise<boolean> => {
+        delete: async (key:string | string[]):Promise<boolean> => {
             return await new Promise((resolve, reject)=>{
                 cli.del(key, (error:Error|null, ok: any)=>{
                     if(error){
