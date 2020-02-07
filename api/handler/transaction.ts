@@ -7,7 +7,6 @@ import { newCard, withCardNumber, withCardName, withExpireAt, withCardCvv } from
 import { writeResponse, withError, withStatusCode, withData, withCache } from "../core/response";
 import { saveCard } from "../card/repository";
 import { validatorErrCode } from "../validator/validator";
-import { ObjectId } from "mongodb";
 import { dateValidator } from "../transactions/rules";
 
 export const transactionCreateHandler = (s:ServerConf): Handler => {
