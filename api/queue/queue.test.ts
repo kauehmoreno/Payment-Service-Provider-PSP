@@ -12,6 +12,7 @@ let _subs = new Map();
 export class mockQueue extends Client {
 
     publishCall:number = 0
+    publishSubject:string = ""
      /**
      * The mocked transport's subs for testing purposes.
      */
@@ -31,13 +32,19 @@ export class mockQueue extends Client {
     }
     publish(subject: string, data?: any, reply?: string | undefined): void {
         this.publishCall +=1
+        this.publishSubject = subject
         const subs = this._getSubsBySubject(subject);
         for (const sub of subs) {
             sub.callback(subject, reply, data);
         }
     }
+
     publishCalls(): number {
         return this.publishCall
+    }
+
+    publishCallSubject(): string {
+        return this.publishSubject
     }
     static connect() {
         const nats =  new mockQueue();

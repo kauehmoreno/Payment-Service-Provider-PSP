@@ -38,7 +38,9 @@ connectQueue(withQueueURL(settings.queue().url)).then(queue => {
                 serverConf.log.error(`fail to config db on app setup: [${err.name}]:${err.message}`)
                 throw err
             })
-        },20)
+        },20, (error:Error)=>{
+            throw error
+        })
 
         const storagerSettings = serverConf.settings.cache()
         try{
