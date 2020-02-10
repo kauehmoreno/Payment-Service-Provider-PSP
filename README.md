@@ -16,6 +16,8 @@ Há uma rota que é possível resgatar as transações por data `${host}/transac
 
 É possível resgatar um payable atráves do id da transação para verificar o detalhe, bem como, status, taxas e o valor final. Outra possibilidade é buscar um payable atráves do id do client e nesse irá retornar o balanço do mesmo.
 
+obs: `Em caso de error ao criar um payable em background, irá entrar em backoff e será enfileirado num topic de error após todas as tentativas e retentará a operação depois`
+
 `${host}/payable/transaction/${transactionId}` - payable transaction details
 `${host}/payable/client/${clientId}` - client balance 
 
